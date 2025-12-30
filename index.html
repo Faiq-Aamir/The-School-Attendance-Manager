@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Attendance</title>
+<style>
+/* =====================
+   RESET & VARIABLES
+===================== */
+:root{
+    --primary:#667eea;
+    --secondary:#764ba2;
+    --success:#43e97b;
+    --danger:#eb1559;
+    --warning:#ffcc00;
+    --dark:#333;
+    --light:#ffffff;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html, body {
+    overflow-x: hidden; /* eliminates right-side gap */
+    width: 100%;
+}
+
+* {
+    max-width: 100%;
+}
+
+/* =====================
+   BODY & GENERAL
+===================== */
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    min-height:100vh;
+    color:var(--dark);
+    padding:15px;
+    padding-bottom: 90px;
+}
+
+h1 {
+    text-align:center;
+    color: #ffffff;
+    text-shadow:
+        0 0 5px black,
+        0 0 10px #292323,
+        0 0 20px darkgray;
+    padding:20px 10px;
+    font-size:clamp(24px, 4vw, 36px);
+    letter-spacing:1px;
+}
+
+/* =====================
+   CONTAINER
+===================== */
+.container {
+    max-width:1000px;
+    margin:auto;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.25);
+    animation:fadeIn 0.6s ease-in-out;
+    overflow: visible;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* =====================
+   INPUTS & BUTTONS
+===================== */
+.input-box {
+    text-align:center;
+    margin-bottom:25px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+}
+
+/* Larger input sizes on all screens */
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    font-size: 17px;
+    width: 100%;
+    max-width: 100%;
+    transition: 0.3s;
+}
+
+/* Extra spacing on phones for better tapping */
+@media (max-width: 600px) {
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+        padding: 18px 20px;
+        font-size: 18px;
+    }
+}
+
+input:focus {
+    border-color:var(--primary);
+    box-shadow:0 0 10px rgba(102,126,234,0.4);
+    outline:none;
+}
+
+/* =====================
+   BUTTON SYSTEM
+===================== */
+/* Menu hidden by default, black background */
+.btn-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative; /* for absolute menu positioning */
+}
+
+.btn-group .context-menu {
+    position: absolute;
+    top: 100%; /* below the buttons */
+    right: 0;
+    display: none; /* hidden initially */
+    flex-direction: column;
+    background: black; /* solid black background */
+    border-radius: 10px;
+    padding: 8px;
+    min-width: 160px;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    opacity: 90%;
+}
+
+.btn-group .context-menu div {
+    padding: 10px;
+    color: white; /* text white for contrast */
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-group .context-menu div:hover {
+    background: rgba(255, 255, 255, 0.15); /* hover effect */
+}
+
+
+
+
+
+button {
+    position:relative;
+    padding:12px 22px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:15px;
+    min-width:120px;
+    transition:all 0.35s ease;
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+    overflow:hidden;
+}
+
+button::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(255,255,255,0.25);
+    opacity:0;
+    transition:0.3s;
+}
+
+button:hover::before{
+    opacity:1;
+}
+
+button:hover{
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 15px 30px rgba(0,0,0,0.35);
+}
+
+button:active{
+    transform:scale(0.96);
+}
+
+.add-btn{
+    background:linear-gradient(135deg,#00f2fe,#4facfe,#43e97b);
+    color:#003;
+}
+.add-btn:hover{
+    transform: translateY(-5px);
+}
+.present-btn{
+    background:linear-gradient(135deg,#11998e,#38ef7d);
+    color:white;
+}
+
+.absent-btn{
+    background:linear-gradient(135deg,#ff0844,#ffb199);
+    color:white;
+}
+
+.delete-btn{
+    background:linear-gradient(135deg,#f00000,#ffcc00);
+    color:white;
+}
+
+button:focus{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(102,126,234,0.5),
+               0 10px 25px rgba(0,0,0,0.35);
+}
+
+/* =====================
+   TABLE STYLING
+===================== */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    min-width: unset !important;
+}
+
+th {
+    background: linear-gradient(to right,var(--primary),var(--secondary));
+    color:white;
+    padding:14px;
+    font-size:15px;
+    text-transform:uppercase;
+}
+
+td {
+    padding:12px;
+    text-align:center;
+    font-size:14px;
+}
+
+tr:nth-child(even) { background:#f6f7ff; }
+tr:hover { background:#eef1ff; }
+
+/* STATUS */
+.present { color:#2e7d32; font-weight:bold; }
+.absent { color:#c62828; font-weight:bold; }
+
+/* =====================
+   CONTEXT MENU
+===================== */
+
+
+
+/* =====================
+   RESPONSIVE FIXES
+===================== */
+
+/* Small phones & tablets */
+@media (max-width: 900px){
+    th, td {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    button {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+}
+
+/* Phones */
+@media (max-width: 600px){
+    .input-box {
+        flex-direction: column;
+        gap: 8px;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .btn-group button {
+        width: 100%;
+        padding: 10px 0;
+        font-size: 15px;
+        border-radius: 8px;
+        min-width: unset;
+    }
+
+    .add-btn {
+        font-size: 18px;
+        padding: 12px 0;
+        width: 100%;
+        max-width: 100%;
+        min-width: unset;
+    }
+
+    .context-menu div {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 6px;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+    th, td {
+        font-size: 11px;
+        padding: 5px;
+    }
+    button {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+}
+
+/* =====================
+   FOOTER
+===================== */
+footer{
+    margin-top:25px;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+}
+
+/* bottom fixed footer style */
+/* =====================
+   COLORFUL FOOTER
+===================== */
+.footer {
+    position: fixed;
+    bottom: 0px;
+    left:0px;
+    width: 100%;
+    margin-top: 55px;
+    overflow: hidden; /* hide overflowing text */
+    max-height: 50px; /* default height */
+    padding: 20px 20px;
+    z-index: 1;
+    background: linear-gradient(
+        135deg,
+        purple,
+        #667eea,
+        #00f2fe,
+        #11998e,
+        #38ef7d
+    );
+    background-size: 300% 300%;
+    animation: footerGradient 8s ease infinite;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 12px;
+    transition: max-height 1.5s ease, padding 0.5s ease;
+}
+
+/* Slide out full content on hover */
+.footer:hover {
+    max-height: 700px; /* adjust as needed for full content */
+    padding: 20px 20px;
+}
+
+/* Footer text */
+.footer div {
+    font-weight: 600;
+    color: #ffeb3b;
+    margin-bottom: 8px;
+}
+
+/* Footer links */
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+.footer-links a {
+    color: yellow;
+    font-weight: bold;
+    text-decoration: none;
+    position: relative;
+    transition: 0.3s;
+}
+
+.footer-links a::after {
+    content: "";
+    width: 0%;
+    height: 2px;
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    background: linear-gradient(to right, yellow, greenyellow);
+    transition: 0.4s ease-in-out;
+}
+
+.footer-links a:hover::after {
+    width: 100%;
+}
+
+
+.menu-btn{
+    font-size: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: 400ms;
+    border-radius: 100%;
+    width: 30px;
+    height: 40px;
+}
+.menu-btn:hover{
+    scale:1.2;
+    background: #bfc2cd;
+}
+@media (max-width: 600px) {
+    .context-menu {
+        min-width: 180px !important;
+    }
+    .context-menu div {
+        padding: 12px 14px !important;
+        font-size: 15px !important;
+    }
+}
+/* =====================
+   EXPORT / IMPORT BUTTONS
+===================== */
+
+.export-btn{
+    background: linear-gradient(135deg, #36d1dc, #5b86e5);
+    color: white;
+}
+
+.import-btn{
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    color: #333;
+}
+
+/* Common behavior (inherits your button base styles) */
+.export-btn,
+.import-btn{
+    font-weight: 600;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* Hover effects */
+.export-btn:hover,
+.import-btn:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.35);
+}
+
+/* Focus ring */
+.export-btn:focus,
+.import-btn:focus{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.5),
+                0 10px 25px rgba(0,0,0,0.35);
+}
+
+/* Mobile full-width buttons */
+@media (max-width: 600px){
+    .export-btn,
+    .import-btn,
+    .total-present-btn{
+        width: 100%;
+        font-size: 15px;
+        padding: 12px 0;
+        border-radius: 10px;
+    }
+}
+.total-present-btn {
+    background: linear-gradient(135deg, #a8e063, #56ab2f);
+    color: white;
+    font-weight: 600;
+    border-radius: 14px;
+    padding: 12px 22px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    transition: all 0.35s ease;
+}
+
+.total-present-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.35);
+}
+
+.btn-icon{
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
+}
+
+</style>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<body>
+
+<h1>📋 Student Attendance Register</h1>
+
+<div class="container">
+
+<div class="input-box">
+    <input type="date" id="attendanceDate" placeholder="Select Date">
+    <input type="number" id="rollNo" placeholder="Index Or Roll Number">
+    <input type="text" id="studentName" placeholder="Student Name">
+<button class="add-btn" onclick="addStudent()">
+    <i class="fa-solid fa-circle-plus btn-icon"></i> Add Student
+</button>
+
+
+<button class="export-btn" onclick="exportBackup()">
+    <i class="fa-solid fa-file-export btn-icon"></i> Export Student List
+</button>
+
+<button class="import-btn" onclick="document.getElementById('importFile').click()">
+    <i class="fa-solid fa-file-import btn-icon"></i> Import Student List
+</button>
+
+<input type="file" id="importFile" accept=".json" hidden onchange="importBackup(event)">
+
+
+<button onclick="countPresents()" class="total-present-btn">
+    <i class="fa-solid fa-check-circle btn-icon"></i> Show Total Presents
+</button>
+
+
+</div>
+
+    <table id="attendanceTable">
+<tr>
+    <th>S.No</th>
+    <th>Roll No/Index</th>
+    <th>Student Name</th>
+    <th>Status</th>
+    <th>Actions</th>
+</tr>
+
+
+    </table>
+
+</div>
+
+
+<footer>
+    © Attendance System | Offline & LocalStorage
+</footer>
+<div class="footer">
+    <div>© 2025 <span>Attendance Manager</span> — All Rights Reserved</div>
+<p style="margin: 5px 0; color: #fff;">
+Welcome to the Student Attendance Manager! Track your students’ attendance efficiently. Add students with names and roll numbers, mark Present/Absent, and manage the list. The context menu (⋮) lets you rename, change roll number, or reorder students. All data is stored locally in your browser for offline use. Perfect for teachers or tutors managing small classes.
+</p>
+<p style="color:#fff;">✔ Attendance records are automatically saved, so you never lose data.</p>
+<p style="color:#fff;">✔ Responsive design works on both desktop and mobile devices.</p>
+<p style="color:#fff;">✔ Quickly add, delete, or update student details with a few clicks.</p>
+<p style="color:#fff;">✔ Colorful buttons and gradients make it visually appealing and easy to use.</p>
+<p style="color:#fff;">✔ Manage multiple sessions for different dates effortlessly.</p>
+<p style="color:#fff;">✔ Export or import your student list as a JSON file. Only names and roll numbers are included; attendance status is not.</p>
+<p style="color:#fff;">✔ Keep your data safe and easily transfer student lists between sessions or devices.</p>
+
+    <div class="footer-links">
+        <a href="at.html">Home</a>
+        <a href="index.html">Attendance Page</a>
+    </div>
+</div>
+
+</div>
+<script>
+function countPresents() {
+    const totalPresents = students.filter(student => student.status === "Present").length;
+    alert(`Total students present: ${totalPresents}`);
+    return totalPresents;
+}
+let sessionId = localStorage.getItem("currentSessionId");
+if(!sessionId){
+    alert("No session found! Go back to Dashboard.");
+    window.location.href = "at.html";
+}
+let students = JSON.parse(localStorage.getItem("students_" + sessionId)) || [];
+
+function saveData() {
+    localStorage.setItem("students_" + sessionId, JSON.stringify(students));
+}
+// EXPORT BACKUP (JSON)
+function exportBackup() {
+    if (students.length === 0) {
+        alert("No students to export!");
+        return;
+    }
+
+    // Keep ONLY roll & name
+    const cleanStudents = students.map(s => ({
+        roll: s.roll,
+        name: s.name
+    }));
+
+    const blob = new Blob(
+        [JSON.stringify(cleanStudents, null, 2)],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `student_list_backup.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+
+// IMPORT BACKUP (JSON)
+function importBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.name.endsWith(".json")) {
+        alert("Please select a valid JSON file!");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const data = JSON.parse(e.target.result);
+
+            if (!Array.isArray(data)) {
+                alert("Invalid backup file!");
+                return;
+            }
+
+            if (!confirm("This will replace the current student list. Continue?")) {
+                return;
+            }
+
+            // Restore students with status reset
+            students = data.map(s => ({
+                roll: s.roll,
+                name: s.name,
+                status: "Not Marked"
+            }));
+
+            saveData();
+            renderTable();
+            alert("Student list imported successfully!");
+        } catch {
+            alert("Error reading backup file!");
+        }
+    };
+
+    reader.readAsText(file);
+    event.target.value = "";
+}
+
+
+function renderTable() {
+    const table = document.getElementById("attendanceTable");
+    // Hide all menus on render
+document.querySelectorAll('.btn-group .context-menu').forEach(menu => {
+    menu.style.display = 'none';
+});
+
+table.innerHTML = `
+    <tr>
+        <th>S.No</th>
+        <th>Roll No/Index</th>
+        <th>Student Name</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+`;
+
+
+    students.forEach((student, index) => {
+        const row = table.insertRow();
+
+row.oncontextmenu = (e) => {
+    e.preventDefault();
+    openMenuAtCursor(e, index);
+};
+
+
+// Serial number (1, 2, 3...)
+row.insertCell(0).innerText = index + 1;
+
+// Roll & Name
+row.insertCell(1).innerText = student.roll;
+row.insertCell(2).innerText = student.name;
+
+
+const statusCell = row.insertCell(3);
+
+        statusCell.innerText = student.status;
+        statusCell.className = student.status === "Present" ? "present" :
+                               student.status === "Absent" ? "absent" : "";
+
+const actionCell = row.insertCell(4);
+actionCell.className = "action-cell";
+
+actionCell.innerHTML = `
+<div class="btn-group">
+    <button class="present-btn" onclick="event.stopPropagation(); markAttendance(${index}, 'Present')">Present</button>
+    <button class="absent-btn" onclick="event.stopPropagation(); markAttendance(${index}, 'Absent')">Absent</button>
+    <button class="delete-btn" onclick="event.stopPropagation(); deleteStudent(${index})">Delete</button>
+    
+    <!-- 3 dots menu button -->
+    <span class="menu-btn" onclick="event.stopPropagation(); toggleRowMenu(this)">⋮</span>
+
+    <!-- Context menu hidden by default -->
+<div class="context-menu">
+    <div onclick="renameStudent(${index})">Rename Student</div>
+    <div onclick="changeRollNumber(${index})">Change Roll Number/Index</div>
+    <div onclick="changePosition(${index})">Change Position</div>
+</div>
+
+</div>
+
+`;
+
+
+
+    });
+}
+
+
+function toggleRowMenu(button) {
+    const btnGroup = button.closest('.btn-group');
+    const menu = btnGroup.querySelector('.context-menu');
+
+    // Hide all other menus
+    document.querySelectorAll('.btn-group .context-menu').forEach(m => {
+        if (m !== menu) m.style.display = 'none';
+    });
+
+    // Toggle menu display
+    if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+        return;
+    }
+
+    // Show temporarily to get height
+    menu.style.display = 'block';
+
+    const menuRect = menu.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+    const footer = document.querySelector('.footer');
+    const footerRect = footer.getBoundingClientRect();
+
+    // Default position: below
+    menu.style.top = '100%';
+    menu.style.bottom = 'auto';
+
+    // If menu bottom goes below viewport or footer top, open upwards
+    if (buttonRect.bottom + menuRect.height > footerRect.top) {
+        menu.style.top = 'auto';
+        menu.style.bottom = buttonRect.height + 'px'; // open above button
+    }
+
+    menu.style.right = '0'; // keep aligned right
+}
+
+
+// Close menus when clicking outside
+document.addEventListener("click", () => {
+    document.querySelectorAll(".btn-group .context-menu").forEach(menu => {
+        menu.style.display = "none";
+    });
+});
+
+// Rename student
+function renameStudent(index) {
+    const newName = prompt("Enter new student name:", students[index].name);
+    if (newName && newName.trim() !== "") {
+        students[index].name = newName.trim();
+        saveData();      // save to localStorage
+        renderTable();   // refresh table
+    }
+    closeAllMenus();
+}
+
+// Change roll number
+function changeRollNumber(index) {
+    const newRoll = prompt("Enter new roll number/index:", students[index].roll);
+    if (newRoll && newRoll.trim() !== "") {
+        students[index].roll = newRoll.trim();
+        saveData();      // save to localStorage
+        renderTable();   // refresh table
+    }
+    closeAllMenus();
+}
+function changePosition(currentIndex) {
+    const totalStudents = students.length;
+    const newPositionStr = prompt(`Enter new position (1 to ${totalStudents}):`);
+    const newPosition = parseInt(newPositionStr);
+
+    if ( newPosition < 1 || newPosition > totalStudents) {
+        alert("Invalid position!");
+        return;
+    }
+
+    // Move student to new position
+    const student = students.splice(currentIndex, 1)[0]; // remove student
+    students.splice(newPosition - 1, 0, student);        // insert at new position
+
+    saveData();    // save changes
+    renderTable(); // refresh table
+    closeAllMenus();
+}
+
+// Helper: close all menus
+function closeAllMenus() {
+    document.querySelectorAll(".btn-group .context-menu").forEach(menu => {
+        menu.style.display = "none";
+    });
+}
+
+function addStudent() {
+    const roll = document.getElementById("rollNo").value;
+    const name = document.getElementById("studentName").value;
+
+    if (!roll || !name) {
+        alert("Enter roll number/index and student name!");
+        return;
+    }
+    students.push({ roll, name, status: "Not Marked" });
+    saveData();
+    renderTable();
+
+    document.getElementById("rollNo").value = "";
+    document.getElementById("studentName").value = "";
+}
+
+function markAttendance(index, status) {
+    students[index].status = status;
+    saveData();
+    renderTable();
+}
+function createNewSession() {
+    let dateInput = document.getElementById("attendanceDate").value;
+    if (!dateInput) {
+        alert("Please select a date for the session.");
+        return;
+    }
+
+    // Create unique session ID
+    let sessionId = Date.now();
+    localStorage.setItem("currentSessionId", sessionId);
+
+    // Save the date for this session
+    localStorage.setItem("attendanceDate_" + sessionId, dateInput);
+
+    // Copy existing students if available
+    let prevSessionId = localStorage.getItem("currentSessionId");
+    let students = [];
+    if (prevSessionId && localStorage.getItem("students_" + prevSessionId)) {
+        students = JSON.parse(localStorage.getItem("students_" + prevSessionId));
+    }
+    localStorage.setItem("students_" + sessionId, JSON.stringify(students));
+
+    renderTable(); // refresh the table for this new session
+}
+
+
+function deleteStudent(index) {
+    if(confirm("Delete this student?")){
+        students.splice(index,1);
+        saveData();
+        renderTable();
+    }
+}
+
+renderTable();
+</script>
+
+</body>
+</html>
+
