@@ -9,158 +9,130 @@
 /* =========================
    RESET + BASE
 ========================= */
-* { box-sizing: border-box; }
+:root {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --primary: #2563eb;
+    --secondary:#764ba2;
+  --primary-hover: #1e40af;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
 body, html {
-  margin: 0; padding: 0; height: 100%;
-  font-family: "Segoe UI", sans-serif;
-  display: flex; justify-content: center; align-items: center;
-  color: white;
-}
-body, html {
-  background:
-    radial-gradient(circle at 20% 20%, #a0a0ff, transparent 40%),
-    radial-gradient(circle at 80% 80%, #ff9ad8, transparent 40%),
-    linear-gradient(135deg, #1a1a3a, #453d7a, #343454); /* brighter colors */
-  background-size: 200% 200%;
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* =========================
-   LOGIN BOX
-========================= */
-.container { width: 100%; max-width: 500px; padding: 0 20px; }
-.login-box {
-    width: 450px;         /* bigger width */
-  padding: 50px 40px;   /* more padding for a spacious look */
-  border-radius: 20px;  /* slightly bigger rounded corners */
-  background: rgba(255,255,255,0.12); backdrop-filter: blur(15px);
-  display: flex; flex-direction: column; align-items: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  position: relative;
-}
-/* SOFT AMBIENT GLOW (simplified) */
-.login-box::before {
-  content: "";
-  position: absolute;
-  inset: -10px;
-  border-radius: inherit;
-  background: radial-gradient(circle at top, rgba(157,252,255,0.25), transparent 50%);
-  filter: blur(12px);
-  opacity: 0.7;
-  z-index: -1;
-}
-
-/* SUBTLE LIGHT SWEEP (kept the hover effect) */
-.login-box::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.12), transparent 80%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s;
-}
-
-/* Updated button gradients for simpler color palette */
-/* All buttons */
-.login-box button {
+/* ===== CONTAINER ===== */
+.container {
   width: 100%;
-  padding: 15px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  max-width: 420px;
+  padding: 20px;
 }
 
-/* Normal login button gradient */
-.login-box button#loginBtn {
-  background: linear-gradient(135deg, #7f7cff, #5f5cff);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.45), inset 0 0 16px rgba(255,255,255,0.12);
-}
-
-/* Change password button gradient */
-#changePassBtn {
-  background: linear-gradient(135deg, #ff8ad8, #ff5fcf);
-}
-
-/* Forgot password button gradient */
-#forgotPassBtn {
-  background: linear-gradient(135deg, #5fd1ff, #3caaff);
-  margin-top: 10px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.35), inset 0 0 12px rgba(255,255,255,0.1);
-}
-
-/* Button hover effect */
-.login-box button:hover {
-  transform: translateY(-4px);
-}
-
-/* Button shine effect (keep as before) */
-.login-box button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
-  transform: translateX(-120%);
-  transition: transform 0.6s;
-}
-
-.login-box button:hover::before {
-  transform: translateX(120%);
-}
-
-
-.input-container input {
-  color: #f5f5f5;
-}
-
-#message {
-  color: #ffcccc;
-}
-
-/* Forgot password link */
-.forgot-link {
-  margin-top: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #9dfcff;
-  text-decoration: underline;
+.login-box {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
   text-align: center;
 }
 
-.login-box h2 { margin-bottom: 25px; font-size: 1.6rem; text-transform: uppercase; }
+/* ===== TITLE ===== */
+.login-box h2 {
+  margin-bottom: 25px;
+  color: #1f2937;
+}
 
-/* INPUTS */
-.input-container { position: relative; width: 100%; margin-bottom: 18px; }
+/* ===== INPUTS ===== */
+.input-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
 .input-container input {
-  width: 100%; padding: 14px 40px 14px 14px;
-  border-radius: 10px; border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(0,0,0,0.35); color: white; outline: none;
+  width: 100%;
+  padding: 14px 42px 14px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
 }
-.input-container input::placeholder { color: rgba(255,255,255,0.6); }
-.input-container input:focus { border-color: #9dfcff; }
 
-/* PASSWORD TOGGLE */
+.input-container input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* ===== PASSWORD ICON ===== */
 .toggle-password {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  cursor: pointer; color: rgba(255,255,255,0.7);
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6b7280;
 }
 
-/* BUTTONS */
+/* ===== BUTTONS ===== */
 .login-box button {
-  width: 100%; padding: 14px; border-radius: 10px; border: none;
-  background: linear-gradient(135deg, #7f7cff, #5f5cff);
-  color: white; font-size: 15px; margin-top: 10px; cursor: pointer;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
 }
-#changePassBtn { background: linear-gradient(135deg, #ff8ad8, #ff5fcf); }
 
-/* LINKS & MESSAGES */
-#message { margin-top: 12px; font-size: 14px; text-align: center; color: #ffb3b3; }
-.forgot-link { margin-top: 8px; font-size: 14px; cursor: pointer; color: #9dfcff; text-decoration: underline; }
+.login-box button:hover {
+  opacity: 0.9;
+}
+
+.login-box button:first-of-type {
+  background: #2563eb;
+  color: white;
+}
+
+#changePassBtn {
+  background: #374151;
+  color: white;
+}
+
+#forgotPassBtn {
+  background: #6b7280;
+  color: white;
+}
+
+/* ===== MESSAGE ===== */
+#message {
+  margin-top: 14px;
+  font-size: 14px;
+  color: #dc2626;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 25px;
+  }
+}
 
 </style>
 </head>
