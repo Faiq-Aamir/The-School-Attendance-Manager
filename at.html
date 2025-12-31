@@ -876,6 +876,7 @@ function logout() {
     if(confirm("Are you sure you want to logout? This will reset your username and password.")){
         localStorage.removeItem("loginUser");
         localStorage.removeItem("loginPass");
+        deleteAllSessions();
         window.location.href = "login.html"; // redirect to login page
     }
 }
@@ -885,3 +886,4 @@ window.addEventListener("load", loadThumbnails);
 
 </body>
 </html>
+
